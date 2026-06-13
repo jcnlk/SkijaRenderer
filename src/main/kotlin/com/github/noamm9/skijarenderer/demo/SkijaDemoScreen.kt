@@ -6,6 +6,7 @@ import com.github.noamm9.skijarenderer.skia.Skija
 import com.github.noamm9.skijarenderer.skia.SkijaGradient
 import com.github.noamm9.skijarenderer.skia.SkijaImage
 import com.github.noamm9.skijarenderer.skia.SkijaPIP.Companion.drawSkija
+import com.github.noamm9.skijarenderer.skia.SkijaPIP.Companion.drawSkijaCached
 import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.client.gui.screens.Screen
 import net.minecraft.network.chat.Component
@@ -17,6 +18,9 @@ class SkijaDemoScreen: Screen(Component.translatable("screen.skijarenderer.demo"
     private var iconImage: SkijaImage? = null
     private var svgImage: SkijaImage? = null
     private val startNanos = System.nanoTime()
+    private var sampledMouseFrame = -1
+    private var sampledMouseX = 0
+    private var sampledMouseY = 0
 
     override fun init() {
         super.init()
@@ -44,9 +48,30 @@ class SkijaDemoScreen: Screen(Component.translatable("screen.skijarenderer.demo"
         val panelY = 28f
         val panelWidth = screenWidth - panelX * 2f
         val panelHeight = screenHeight - panelY * 2f
+        val shapeX = panelX + 20f
+        val shapeY = panelY + 78f
+        val clipX = panelX + 20f
+        val clipY = panelY + 248f
+        val transformX = panelX + 250f
+        val transformY = panelY + 248f
+        val imageX = panelX + panelWidth - 250f
+        val imageY = panelY + 78f
+        val animationFrame = (time * 60f).toInt()
+        if (sampledMouseFrame != animationFrame) {
+            sampledMouseFrame = animationFrame
+            sampledMouseX = mouseX
+            sampledMouseY = mouseY
+        }
+        val mouseFrame = animationFrame * 31 + (sampledMouseX / 4) * 8191 + (sampledMouseY / 4)
 
-        guiGraphics.drawSkija {
-            Skija.rect(0f, 0f, screenWidth, screenHeight, Color(6, 10, 18, 165))
+        guiGraphics.fill(0, 0, width, height, Color(6, 10, 18, 165).rgb)
+        if (panelWidth <= 0f || panelHeight <= 0f) return
+
+        val staticX = (panelX - 28f).coerceAtLeast(0f)
+        val staticY = (panelY - 28f).coerceAtLeast(0f)
+        val staticRight = (panelX + panelWidth + 28f).coerceAtMost(screenWidth)
+        val staticBottom = (panelY + panelHeight + 28f).coerceAtMost(screenHeight)
+        guiGraphics.drawSkijaCached("demo.static", staticX, staticY, staticRight - staticX, staticBottom - staticY, 0) {
             Skija.dropShadow(panelX, panelY, panelWidth, panelHeight, 28f, 10f, 20f)
             Skija.gradientRect(
                 panelX,
@@ -59,13 +84,24 @@ class SkijaDemoScreen: Screen(Component.translatable("screen.skijarenderer.demo"
                 20f
             )
             Skija.hollowRect(panelX, panelY, panelWidth, panelHeight, 1f, Color(90, 122, 184, 110), 20f)
-
             drawHeader(panelX, panelY, panelWidth)
-            drawShapeShowcase(panelX + 20f, panelY + 78f, time)
+            drawShapeShowcase(shapeX, shapeY, 0f, animated = false)
             drawTextShowcase(panelX + 250f, panelY + 78f)
-            drawClipShowcase(panelX + 20f, panelY + 248f, time)
-            drawTransformShowcase(panelX + 250f, panelY + 248f, mouseX.toFloat(), mouseY.toFloat(), time)
-            drawImageShowcase(panelX + panelWidth - 250f, panelY + 78f, time)
+            drawClipShowcase(clipX, clipY, 0f, animated = false)
+            drawTransformShowcase(transformX, transformY, 0f, 0f, 0f, animated = false)
+            drawImageShowcase(imageX, imageY, 0f, animated = false)
+        }
+        guiGraphics.drawSkijaCached("demo.shape.animation", shapeX + 120f, shapeY + 105f, 76f, 76f, animationFrame) {
+            drawShapeAnimation(shapeX, shapeY, time)
+        }
+        guiGraphics.drawSkijaCached("demo.clip.animation", clipX + 12f, clipY + 42f, 166f, 96f, animationFrame) {
+            drawClipRows(clipX, clipY, time)
+        }
+        guiGraphics.drawSkijaCached("demo.transform.button", transformX + 18f, transformY + 46f, 158f, 76f, mouseFrame) {
+            drawTransformButton(transformX, transformY, sampledMouseX.toFloat(), sampledMouseY.toFloat(), time)
+        }
+        guiGraphics.drawSkijaCached("demo.image.animation", imageX + 150f, imageY + 45f, 72f, 72f, animationFrame) {
+            drawImageAnimation(imageX, imageY, time)
         }
     }
 
@@ -84,7 +120,7 @@ class SkijaDemoScreen: Screen(Component.translatable("screen.skijarenderer.demo"
         SkijaText.drawGradient("Native Skija GUI rendering", panelX + 34f, panelY + 58f, Color(160, 212, 255), Color(132, 255, 208), 12f)
     }
 
-    private fun drawShapeShowcase(x: Float, y: Float, time: Float) {
+    private fun drawShapeShowcase(x: Float, y: Float, time: Float, animated: Boolean = true) {
         SkijaText.draw("Shapes", x, y, Color.WHITE, 16f)
         val originY = y + 30f
 
@@ -96,6 +132,11 @@ class SkijaDemoScreen: Screen(Component.translatable("screen.skijarenderer.demo"
         Skija.dropShadow(x + 56f, originY + 90f, 84f, 14f, 12f, 2f, 7f)
         Skija.gradientRect(x + 56f, originY + 90f, 84f, 14f, Color(255, 115, 115), Color(255, 214, 102), SkijaGradient.LEFT_RIGHT, 7f)
 
+        if (animated) drawShapeAnimation(x, y, time)
+    }
+
+    private fun drawShapeAnimation(x: Float, y: Float, time: Float) {
+        val originY = y + 30f
         Skija.push()
         Skija.translate(x + 150f, originY + 92f)
         Skija.rotate(sin(time) * 0.15f)
@@ -123,11 +164,17 @@ class SkijaDemoScreen: Screen(Component.translatable("screen.skijarenderer.demo"
             }
     }
 
-    private fun drawClipShowcase(x: Float, y: Float, time: Float) {
+    private fun drawClipShowcase(x: Float, y: Float, time: Float, animated: Boolean = true) {
         SkijaText.draw("Scissor / clipping", x, y, Color.WHITE, 16f)
         val boxY = y + 30f
 
         Skija.rect(x, boxY, 190f, 120f, Color(12, 16, 27, 170), 16f)
+        if (animated) drawClipRows(x, y, time)
+        Skija.hollowRect(x + 12f, boxY + 12f, 166f, 96f, 1f, Color(255, 255, 255, 80), 10f)
+    }
+
+    private fun drawClipRows(x: Float, y: Float, time: Float) {
+        val boxY = y + 30f
         Skija.pushScissor(x + 12f, boxY + 12f, 166f, 96f)
         for (index in 0 until 7) {
             val itemY = boxY + 18f + index * 22f + sin(time * 1.8f + index) * 10f
@@ -137,14 +184,19 @@ class SkijaDemoScreen: Screen(Component.translatable("screen.skijarenderer.demo"
             Skija.circle(x + 154f, itemY + 8f, 5f, Color(255, 225, 145))
         }
         Skija.popScissor()
-        Skija.hollowRect(x + 12f, boxY + 12f, 166f, 96f, 1f, Color(255, 255, 255, 80), 10f)
     }
 
-    private fun drawTransformShowcase(x: Float, y: Float, mouseX: Float, mouseY: Float, time: Float) {
+    private fun drawTransformShowcase(x: Float, y: Float, mouseX: Float, mouseY: Float, time: Float, animated: Boolean = true) {
         SkijaText.draw("Transforms / hover", x, y, Color.WHITE, 16f)
         val boxY = y + 30f
-        val scale = 1.15f + (sin(time * 1.4f) * 0.08f)
+        Skija.rect(x, boxY, 220f, 120f, Color(12, 16, 27, 170), 16f)
+        if (animated) drawTransformButton(x, y, mouseX, mouseY, time)
+        SkijaText.draw("MouseStack follows translate + scale", x + 16f, boxY + 94f, Color(190, 202, 230), 12f)
+    }
 
+    private fun drawTransformButton(x: Float, y: Float, mouseX: Float, mouseY: Float, time: Float) {
+        val boxY = y + 30f
+        val scale = 1.15f + (sin(time * 1.4f) * 0.08f)
         mouseStack.update(mouseX.toDouble(), mouseY.toDouble())
         mouseStack.push()
         mouseStack.translate(x + 22f, boxY + 20f)
@@ -152,7 +204,6 @@ class SkijaDemoScreen: Screen(Component.translatable("screen.skijarenderer.demo"
 
         val hovered = mouseStack.x in 0.0 .. 120.0 && mouseStack.y in 0.0 .. 54.0
 
-        Skija.rect(x, boxY, 220f, 120f, Color(12, 16, 27, 170), 16f)
         Skija.push()
         Skija.translate(x + 22f, boxY + 20f)
         Skija.scale(scale)
@@ -162,25 +213,28 @@ class SkijaDemoScreen: Screen(Component.translatable("screen.skijarenderer.demo"
         SkijaText.draw("${mouseStack.x.toInt()}, ${mouseStack.y.toInt()}", 60f, 34f, Color(232, 239, 255), 12f, align = SkijaText.Align.CENTER)
         Skija.pop()
         mouseStack.pop()
-
-        SkijaText.draw("MouseStack follows translate + scale", x + 16f, boxY + 94f, Color(190, 202, 230), 12f)
     }
 
-    private fun drawImageShowcase(x: Float, y: Float, time: Float) {
+    private fun drawImageShowcase(x: Float, y: Float, time: Float, animated: Boolean = true) {
         SkijaText.draw("Images", x, y, Color.WHITE, 16f)
         val boxY = y + 30f
 
         Skija.rect(x, boxY, 220f, 120f, Color(12, 16, 27, 170), 16f)
         iconImage?.let { Skija.image(it, x + 18f, boxY + 18f, 56f, 56f, 14f) }
         svgImage?.let { Skija.image(it, x + 90f, boxY + 18f, 56f, 56f, 14f) }
+        if (animated) drawImageAnimation(x, y, time)
+
+        SkijaText.draw("PNG", x + 46f, boxY + 86f, Color(190, 202, 230), 12f, align = SkijaText.Align.CENTER)
+        SkijaText.draw("SVG", x + 118f, boxY + 86f, Color(190, 202, 230), 12f, align = SkijaText.Align.CENTER)
+        SkijaText.draw("Animated", x + 178f, boxY + 86f, Color(190, 202, 230), 12f, align = SkijaText.Align.CENTER)
+    }
+
+    private fun drawImageAnimation(x: Float, y: Float, time: Float) {
+        val boxY = y + 30f
         Skija.push()
         Skija.translate(x + 178f, boxY + 46f)
         Skija.rotate(sin(time * 1.3f) * 0.25f)
         svgImage?.let { Skija.image(it, - 20f, - 20f, 40f, 40f) }
         Skija.pop()
-
-        SkijaText.draw("PNG", x + 46f, boxY + 86f, Color(190, 202, 230), 12f, align = SkijaText.Align.CENTER)
-        SkijaText.draw("SVG", x + 118f, boxY + 86f, Color(190, 202, 230), 12f, align = SkijaText.Align.CENTER)
-        SkijaText.draw("Animated", x + 178f, boxY + 86f, Color(190, 202, 230), 12f, align = SkijaText.Align.CENTER)
     }
 }

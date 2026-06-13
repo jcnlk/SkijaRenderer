@@ -16,7 +16,7 @@ object SkijaRenderer: ClientModInitializer {
     )
 
     override fun onInitializeClient() {
-        PictureInPictureRendererRegistry.register { SkijaPIP(it.bufferSource()) }
+        PictureInPictureRendererRegistry.register { SkijaPIP() }
 
         ClientTickEvents.END_CLIENT_TICK.register { client ->
             while (openDemoKey.consumeClick()) {

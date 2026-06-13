@@ -1,16 +1,16 @@
 # SkijaRenderer
 
-Skija-based rendering library for Fabric `26.1.2`.
+Skija-based rendering library for Fabric `26.2-rc-2`.
 
 The library is aimed at client-side HUD, menu, and overlay rendering. It wraps the Skija frame setup used by
 Minecraft's picture-in-picture GUI path and adds a small set of drawing, text, image, and coordinate helpers.
 
 ## Requirements
 
-- Minecraft `26.1.2`
-- Fabric Loader `0.18.4+`
-- Fabric API `0.149.1+26.1.2`
-- Fabric Language Kotlin `1.13.11+kotlin.2.3.21`
+- Minecraft `26.2-rc-2`
+- Fabric Loader `0.19.3+`
+- Fabric API `0.152.0+26.2`
+- Fabric Language Kotlin `1.13.12+kotlin.2.4.0`
 - Java `25`
 
 ## Main API
@@ -90,20 +90,38 @@ Notes:
 - `image(path, ...)` is fine for stable assets, but it caches by path.
 - Loading images from disk inside a render loop is a bad idea. Preload them.
 
-## GuiGraphics Integration
+## GuiGraphicsExtractor Integration
 
-[`SkijaPIP`](src/main/kotlin/com/github/noamm9/skijarenderer/skia/SkijaPIP.kt) exposes a `GuiGraphics.drawSkija { ... }`
+[`SkijaPIP`](src/main/kotlin/com/github/noamm9/skijarenderer/skia/SkijaPIP.kt) exposes a `GuiGraphicsExtractor.drawSkija { ... }`
 extension.
-It respects the current `GuiGraphics` transform and scissor state, and it draws in normal Minecraft GUI coordinates.
+It respects the current `GuiGraphicsExtractor` transform and scissor state, and it draws in normal Minecraft GUI coordinates.
 
 ```kotlin
-override fun render(guiGraphics: GuiGraphics, mouseX: Int, mouseY: Int, partialTick: Float) {
-    super.render(guiGraphics, mouseX, mouseY, partialTick)
+override fun extractRenderState(guiGraphics: GuiGraphicsExtractor, mouseX: Int, mouseY: Int, partialTick: Float) {
+    super.extractRenderState(guiGraphics, mouseX, mouseY, partialTick)
 
     guiGraphics.drawSkija {
         Skija.rect(0, 0, 220, 120, Color(15, 18, 24, 210), 14f)
-        Skija.text("Skija inside GuiGraphics", 16f, 18f, 16f, Color.WHITE)
+        Skija.text("Skija inside GuiGraphicsExtractor", 16f, 18f, 16f, Color.WHITE)
     }
+}
+```
+
+For dynamic widgets, prefer the bounded overload so Vulkan only uploads the affected GUI area:
+
+```kotlin
+guiGraphics.drawSkija(20, 20, 220, 120) {
+    Skija.rect(20, 20, 220, 120, Color(15, 18, 24, 210), 14f)
+    Skija.text("Bounded Skija", 36f, 38f, 16f, Color.WHITE)
+}
+```
+
+For cached static widgets, use an explicit stable cache key. The cache token controls invalidation; the key identifies the widget:
+
+```kotlin
+guiGraphics.drawSkijaCached("example.panel", 20, 20, 220, 120, cacheToken = 0) {
+    Skija.rect(20, 20, 220, 120, Color(15, 18, 24, 210), 14f)
+    Skija.text("Cached Skija", 36f, 38f, 16f, Color.WHITE)
 }
 ```
 

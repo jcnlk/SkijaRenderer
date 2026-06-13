@@ -8,8 +8,8 @@ import java.net.URI
 
 internal object ResourceLoader {
     fun read(location: String): ByteArray {
-        val normalized = normalizeLocation(location)
-        return if (isHttpLocation(normalized)) readURL(normalized) else readFileOrClasspath(normalized)
+        val trimmed = location.trim()
+        return if (isHttpLocation(trimmed)) readURL(trimmed) else readFileOrClasspath(trimmed)
     }
 
     internal fun normalizeLocation(location: String): String = location.trim().removePrefix("/")
@@ -39,9 +39,10 @@ internal object ResourceLoader {
         val file = File(location)
         if (file.exists() && file.isFile) return file.readBytes()
 
-        val stream = Thread.currentThread().contextClassLoader.getResourceAsStream(location)
-            ?: ResourceLoader::class.java.getResourceAsStream("/$location")
-            ?: throw FileNotFoundException("$location not found")
+        val classpathLocation = normalizeLocation(location)
+        val stream = Thread.currentThread().contextClassLoader.getResourceAsStream(classpathLocation)
+            ?: ResourceLoader::class.java.getResourceAsStream("/$classpathLocation")
+            ?: throw FileNotFoundException("$classpathLocation not found")
 
         return stream.use { it.readBytes() }
     }

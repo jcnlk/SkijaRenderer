@@ -2,8 +2,8 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    kotlin("jvm") version "2.3.21"
-    id("net.fabricmc.fabric-loom") version "1.15-SNAPSHOT"
+    kotlin("jvm") version "2.4.0"
+    id("net.fabricmc.fabric-loom") version "1.15.5"
     id("maven-publish")
 }
 
@@ -45,6 +45,7 @@ dependencies {
 tasks.processResources {
     inputs.property("version", project.version)
     inputs.property("minecraft_version", project.property("minecraft_version") !!)
+    inputs.property("minecraft_dependency", project.property("minecraft_dependency") !!)
     inputs.property("loader_version", project.property("loader_version") !!)
     filteringCharset = "UTF-8"
 
@@ -52,6 +53,7 @@ tasks.processResources {
         expand(
             "version" to project.version,
             "minecraft_version" to project.property("minecraft_version") !!,
+            "minecraft_dependency" to project.property("minecraft_dependency") !!,
             "loader_version" to project.property("loader_version") !!,
             "kotlin_loader_version" to project.property("kotlin_loader_version") !!
         )
