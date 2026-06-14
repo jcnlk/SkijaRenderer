@@ -15,7 +15,7 @@ Minecraft's picture-in-picture GUI path and adds a small set of drawing, text, i
 
 ## Main API
 
-[`Skija`](src/main/kotlin/com/github/noamm9/skijarenderer/skia/Skija.kt) is the drawing entry point.
+[`Skija`](src/main/kotlin/com/github/jcnlk/skijarenderer/skia/Skija.kt) is the drawing entry point.
 
 ```kotlin
 Skija.rect(20, 20, 120, 40, Color(20, 20, 20, 180), 8f)
@@ -48,7 +48,7 @@ Skija.pop()
 
 ## Text
 
-[`SkijaText`](src/main/kotlin/com/github/noamm9/skijarenderer/helpers/SkijaText.kt) wraps common text drawing and strips
+[`SkijaText`](src/main/kotlin/com/github/jcnlk/skijarenderer/helpers/SkijaText.kt) wraps common text drawing and strips
 Minecraft formatting codes before measuring or rendering.
 
 ```kotlin
@@ -67,7 +67,7 @@ SkijaText.drawGradient(
 
 ## Images
 
-[`SkijaImage`](src/main/kotlin/com/github/noamm9/skijarenderer/skia/SkijaImage.kt) and `Skija.createImage(...)` support:
+[`SkijaImage`](src/main/kotlin/com/github/jcnlk/skijarenderer/skia/SkijaImage.kt) and `Skija.createImage(...)` support:
 
 - classpath resources
 - absolute or relative file paths
@@ -92,7 +92,7 @@ Notes:
 
 ## GuiGraphicsExtractor Integration
 
-[`SkijaPIP`](src/main/kotlin/com/github/noamm9/skijarenderer/skia/SkijaPIP.kt) exposes a `GuiGraphicsExtractor.drawSkija { ... }`
+[`SkijaPIP`](src/main/kotlin/com/github/jcnlk/skijarenderer/skia/SkijaPIP.kt) exposes a `GuiGraphicsExtractor.drawSkija { ... }`
 extension.
 It respects the current `GuiGraphicsExtractor` transform and scissor state, and it draws in normal Minecraft GUI coordinates.
 
@@ -138,7 +138,7 @@ Press `F8` in-game to open the built-in demo screen. It exercises:
 
 ## Mouse Coordinates
 
-[`MouseStack`](src/main/kotlin/com/github/noamm9/skijarenderer/helpers/MouseStack.kt) mirrors simple 2D GUI transforms so
+[`MouseStack`](src/main/kotlin/com/github/jcnlk/skijarenderer/helpers/MouseStack.kt) mirrors simple 2D GUI transforms so
 hover checks can use local coordinates.
 
 ```kotlin

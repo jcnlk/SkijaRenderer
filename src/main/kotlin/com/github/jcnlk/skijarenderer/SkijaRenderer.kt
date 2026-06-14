@@ -1,7 +1,7 @@
-package com.github.noamm9.skijarenderer
+package com.github.jcnlk.skijarenderer
 
-import com.github.noamm9.skijarenderer.demo.SkijaDemoScreen
-import com.github.noamm9.skijarenderer.skia.SkijaPIP
+import com.github.jcnlk.skijarenderer.demo.SkijaDemoScreen
+import com.github.jcnlk.skijarenderer.skia.SkijaPIP
 import com.mojang.blaze3d.platform.InputConstants
 import net.fabricmc.api.ClientModInitializer
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents

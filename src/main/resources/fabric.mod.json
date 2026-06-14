@@ -5,7 +5,7 @@
   "name": "SkijaRenderer",
   "description": "Minecraft Fabric ${version} Skija rendering library",
   "authors": [
-    "Noamm"
+    "jcnlk"
   ],
   "contact": {},
   "license": "unlicense",
@@ -14,7 +14,7 @@
   "entrypoints": {
     "client": [
       {
-        "value": "com.github.noamm9.skijarenderer.SkijaRenderer",
+        "value": "com.github.jcnlk.skijarenderer.SkijaRenderer",
         "adapter": "kotlin"
       }
     ]

@@ -1,4 +1,4 @@
-package com.github.noamm9.skijarenderer.helpers
+package com.github.jcnlk.skijarenderer.helpers
 
 import kotlin.test.Test
 import kotlin.test.assertEquals

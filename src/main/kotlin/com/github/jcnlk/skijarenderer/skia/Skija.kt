@@ -1,6 +1,6 @@
 @file:Suppress("unused")
 
-package com.github.noamm9.skijarenderer.skia
+package com.github.jcnlk.skijarenderer.skia
 
 import org.jetbrains.skija.*
 import org.jetbrains.skija.svg.SVGDOM

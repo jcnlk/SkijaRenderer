@@ -1,8 +1,8 @@
-package com.github.noamm9.skijarenderer.helpers
+package com.github.jcnlk.skijarenderer.helpers
 
-import com.github.noamm9.skijarenderer.skia.Skija
-import com.github.noamm9.skijarenderer.skia.SkijaFont
-import com.github.noamm9.skijarenderer.skia.SkijaGradient
+import com.github.jcnlk.skijarenderer.skia.Skija
+import com.github.jcnlk.skijarenderer.skia.SkijaFont
+import com.github.jcnlk.skijarenderer.skia.SkijaGradient
 import java.awt.Color
 
 object SkijaText {

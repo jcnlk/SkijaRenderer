@@ -1,4 +1,4 @@
-package com.github.noamm9.skijarenderer.skia
+package com.github.jcnlk.skijarenderer.skia
 
 import com.mojang.blaze3d.GpuFormat
 import com.mojang.blaze3d.opengl.GlStateManager

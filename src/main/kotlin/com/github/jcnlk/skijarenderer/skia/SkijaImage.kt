@@ -1,4 +1,4 @@
-package com.github.noamm9.skijarenderer.skia
+package com.github.jcnlk.skijarenderer.skia
 
 data class SkijaImage(
     val location: String,

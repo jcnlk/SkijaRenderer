@@ -1,12 +1,11 @@
-package com.github.noamm9.skijarenderer.demo
+package com.github.jcnlk.skijarenderer.demo
 
-import com.github.noamm9.skijarenderer.helpers.MouseStack
-import com.github.noamm9.skijarenderer.helpers.SkijaText
-import com.github.noamm9.skijarenderer.skia.Skija
-import com.github.noamm9.skijarenderer.skia.SkijaGradient
-import com.github.noamm9.skijarenderer.skia.SkijaImage
-import com.github.noamm9.skijarenderer.skia.SkijaPIP.Companion.drawSkija
-import com.github.noamm9.skijarenderer.skia.SkijaPIP.Companion.drawSkijaCached
+import com.github.jcnlk.skijarenderer.helpers.MouseStack
+import com.github.jcnlk.skijarenderer.helpers.SkijaText
+import com.github.jcnlk.skijarenderer.skia.Skija
+import com.github.jcnlk.skijarenderer.skia.SkijaGradient
+import com.github.jcnlk.skijarenderer.skia.SkijaImage
+import com.github.jcnlk.skijarenderer.skia.SkijaPIP.Companion.drawSkijaCached
 import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.client.gui.screens.Screen
 import net.minecraft.network.chat.Component

@@ -1,4 +1,4 @@
-package com.github.noamm9.skijarenderer.helpers
+package com.github.jcnlk.skijarenderer.helpers
 
 import net.minecraft.client.Minecraft
 import org.joml.Matrix3x2f
